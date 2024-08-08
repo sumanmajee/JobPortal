@@ -2,6 +2,7 @@ import { catchAsyncError } from "../middlewares/catchAsyncError.js"
 import { ErrorHandler } from "../middlewares/error.middleware.js"
 import { User } from "../models/user.model.js"
 import { v2 as cloudinary } from "cloudinary";
+import { sendToken } from "../utils/jwtToken.js";
 
 export const register = catchAsyncError(async(req, res, next) => {
     try {
@@ -62,7 +63,7 @@ export const register = catchAsyncError(async(req, res, next) => {
                     }
                     userData.resume = {
                         public_id: cloudinaryResponse.public_id,
-                        url: cloudinaryResponse.secure_url,
+                        url: cloudinaryResponse.url,
                     };
                 } catch (error) {
                     return next(new ErrorHandler("Failed to upload resume", 500));
@@ -71,12 +72,29 @@ export const register = catchAsyncError(async(req, res, next) => {
         }
 
         const user = await User.create(userData)
-        res.status(201).json({
-            success: true,
-            message: "User Registered"
-        })
+        sendToken(user, 201, res, "User Registered")
     } catch (error) {
         next(error)
     }
 })
 
+export const login = catchAsyncError(async (req, res, next) => {
+    const { role, email, password } = req.body;
+    if (!role || !email || !password) {
+    return next(
+        new ErrorHandler("Email, password and role are required.", 400)
+      );
+    }
+    const user = await User.findOne({ email }).select("+password");
+    if (!user) {
+      return next(new ErrorHandler("Invalid email or password.", 400));
+    }
+    const isPasswordMatched = await user.comparePassword(password);
+    if (!isPasswordMatched) {
+      return next(new ErrorHandler("Invalid email or password.", 400));
+    }
+    if (user.role !== role) {
+      return next(new ErrorHandler("Invalid user role.", 400));
+    }
+    sendToken(user, 200, res, "User logged in successfully.");
+  });
