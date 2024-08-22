@@ -33,14 +33,11 @@ export const postApplication = catchAsyncError(async (req, res, next) => {
         );
     }
     if (req.files && req.files.resume) {
-        const { resume } = req.files;
+        const resume = req.files.resume;
         try {
-            const cloudinaryResponse = await cloudinary.uploader.upload(
-                resume.tempFilePath,
-                {
-                    folder: "Job_Seekers_Resume",
-                }
-            );
+            const cloudinaryResponse = await cloudinary.uploader.upload(resume.tempFilePath, {
+                folder: "Job_Seekers_Resume",
+            });
             if (!cloudinaryResponse || cloudinaryResponse.error) {
                 return next(
                     new ErrorHandler("Failed to upload resume to cloudinary.", 500)
@@ -50,6 +47,7 @@ export const postApplication = catchAsyncError(async (req, res, next) => {
                 public_id: cloudinaryResponse.public_id,
                 url: cloudinaryResponse.url,
             };
+            // console.log(req.files.resume)
         } catch (error) {
             return next(new ErrorHandler("Failed to upload resume", 500));
         }

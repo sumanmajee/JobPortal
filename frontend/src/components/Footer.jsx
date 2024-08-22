@@ -34,7 +34,7 @@ const Footer = () => {
             {isAuthenticated && user.role === "Employer" ? null : (
               <li>
                 <Link to={"/jobs"}>
-                  JOBS
+                  Jobs
                 </Link>
               </li>
             )}
