@@ -26,6 +26,7 @@ app.use(fileUpload({
     useTempFiles: true,
     tempFileDir: "/tmp/"
 }))
+app.use(express.static("public"))
 
 
 // routes import
