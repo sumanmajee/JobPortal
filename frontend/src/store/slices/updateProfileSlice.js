@@ -47,7 +47,7 @@ export const updateProfile = (data) => async (dispatch) => {
     dispatch(updateProfileSlice.actions.updateProfileRequest());
     try {
         const response = await axios.put(
-        "https://job-portal-server-eight-kappa.vercel.app/api/v1/user/update/profile",
+        "http://localhost:4000/api/v1/user/update/profile",
         data,
         {
             withCredentials: true,
@@ -68,7 +68,7 @@ export const updatePassword = (data) => async (dispatch) => {
     dispatch(updateProfileSlice.actions.updatePasswordRequest());
     try {
         const response = await axios.put(
-        "https://job-portal-server-eight-kappa.vercel.app/api/v1/user/update/password",
+        "http://localhost:4000/api/v1/user/update/password",
         data,
         {
             withCredentials: true,
